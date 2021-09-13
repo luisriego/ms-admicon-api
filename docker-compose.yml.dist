@@ -1,0 +1,58 @@
+version: '3.5'
+
+services:
+  ms-admicon-3-web:
+    container_name: ms-admicon-3-web
+    build:
+      context: ./docker/nginx
+      args:
+        UID: $U_ID
+    ports:
+      - 1000:80
+    volumes:
+      - ./public:/appdata/www/public
+    depends_on:
+      - ms-admicon-3-be
+    networks:
+      - ms-admicon-3-network
+
+  ms-admicon-3-be:
+    container_name: ms-admicon-3-be
+    build:
+      context: docker/php
+      args:
+        UID: $U_ID
+    volumes:
+      - ./:/appdata/www
+    ###> XDEBUG 3 ###
+    # Use your client IP here
+    # Linux: run "ip a | grep docker0"
+    # Windows (with WSL2) and Mac: host.docker.internal
+    environment:
+      XDEBUG_CLIENT_HOST: 172.17.0.1
+      XDEBUG_CLIENT_PORT: 9003
+      PHP_IDE_CONFIG: serverName=docker-dev-env-for-symfony
+    networks:
+      - ms-admicon-3-network
+
+  ms-admicon-3-db:
+    container_name: ms-admicon-3-db
+    build:
+      context: ./docker/database
+    ports:
+      - 10000:3306
+    environment:
+      MYSQL_DATABASE: database
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ms-admicon-3-db-data:/var/lib/mysql
+    networks:
+      - ms-admicon-3-network
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+
+volumes:
+  ms-admicon-3-db-data:
+
+networks:
+  ms-admicon-3-network:
+    external: true
