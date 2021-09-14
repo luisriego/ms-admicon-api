@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+    <entity name="App\Entity\User" table="user">
+        <id name="id" type="string" length="36" column-definition="CHAR(36) NOT NULL"/>
+
+        <field name="name" length="100" />
+        <field name="email" length="255" />
+        <field name="password" length="100" nullable="true" />
+        <field name="token" length="100" nullable="true" />
+        <field name="resetPasswordToken" nullable="true" />
+        <field name="avatar" length="255" nullable="true" />
+        <field name="active" type="boolean" />
+        <field name="createdAt" type="datetime" column-definition="DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP" />
+
+        <unique-constraints>
+            <unique-constraint columns="email" name="U_user_email" />
+        </unique-constraints>
+
+        <indexes>
+            <index columns="active" name="IDX_user_active" />
+        </indexes>
+
+        <lifecycle-callbacks>
+            <lifecycle-callback type="preUpdate" method="markAsUpdated"/>
+        </lifecycle-callbacks>
+    </entity>
+</doctrine-mapping>
