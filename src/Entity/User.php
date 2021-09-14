@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Entity;
 
 
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 
 
-class User implements UserInterface
+/**
+ * @method string getUserIdentifier()
+ */
+class User implements PasswordAuthenticatedUserInterface
 {
     private string $id;
     private string $name;
@@ -59,16 +63,16 @@ class User implements UserInterface
     public function setEmail(string $email): void
     {
         if (!\filter_var($email, \FILTER_VALIDATE_EMAIL)) {
-            throw new \LogicException('Invalid email');
+            throw new \LogicException('Email inválido');
         }
 
         $this->email = $email;
     }
 
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
+//    public function getPassword(): ?string
+//    {
+//        return $this->password;
+//    }
 
     public function setPassword(?string $password): void
     {
@@ -155,5 +159,10 @@ class User implements UserInterface
     public function __call(string $name, array $arguments)
     {
         // TODO: Implement @method string getUserIdentifier()
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
     }
 }
